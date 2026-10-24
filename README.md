@@ -24,6 +24,41 @@ La medición de memoria del patrón Flyweight no forma parte de `npm test`; se e
 node --expose-gc Semana10_Flyweight/medir-memoria.js 50000
 ```
 
+## Demostración con interfaz web
+
+Interfaz de demostración (React + API en Node.js) que permite recorrer el flujo completo desde el navegador. No es la integración final del proyecto: su propósito es mostrar los patrones funcionando juntos.
+
+Requiere Node.js 22.22 o superior para las pruebas del frontend (20.19 o superior alcanza para compilarlo).
+
+```bash
+# 1. Compilar la interfaz (una sola vez)
+cd frontend
+npm install
+npm run build
+cd ..
+
+# 2. Levantar el servidor (sirve la interfaz y la API)
+node backend/server.js
+```
+
+Abrir <http://localhost:3001>. Para usar otro puerto: `PORT=4000 node backend/server.js` (en PowerShell: `$env:PORT=4000; node backend/server.js`).
+
+Las pruebas del backend se ejecutan con el resto desde la raíz (`npm test`). Las del frontend van aparte: `cd frontend && npm test`.
+
+**Roles.** El selector "Rol" de la cabecera simula quién usa el sistema (Votante, Jurado de mesa, Auditor, Administrador electoral). Es una simulación para demostrar el Proxy de protección, no una autenticación real.
+
+**Recorrido sugerido:**
+
+1. Con rol *Jurado de mesa*, votar en la Mesa 1 con un documento de 6 a 12 dígitos. Aparece el comprobante con un código anónimo.
+2. Repetir el voto con el mismo documento: se rechaza (ya votó). Los documentos que empiezan por 9 no están en el padrón.
+3. En el canal *Virtual*, pedir el código; en la demo el SMS se muestra en pantalla.
+4. Con rol *Votante*, ir a *Resultados*: se deniega. Con *Auditor*, también, mientras haya mesas abiertas.
+5. En *Panel electoral*, cerrar todas las mesas (incluida la urna virtual).
+6. Con rol *Auditor*, consultar resultados, generar el reporte con Decorators y revisar la *Auditoría*: los documentos aparecen enmascarados y se verifica la cadena de huellas.
+7. Con rol *Administrador electoral* se puede avisar los resultados (Bridge) y reiniciar la demo.
+
+La API y la interfaz están documentadas en `backend/README.md` y `frontend/README.md`. Limitaciones conocidas: el estado vive en memoria (reiniciar el servidor reinicia la elección) y el código OTP se muestra en pantalla porque no hay proveedor real de SMS.
+
 ## Estructura por patrón
 
 | Carpeta | Patrón | Tipo | Rol en SecureBallot |
